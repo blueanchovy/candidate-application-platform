@@ -32,6 +32,7 @@ const filtersData = {
     "NLP",
   ],
   experience: [1, 2, 3, 4, 5, 6, 7, 8, 9, 10],
+  salary: [0, 10, 20, 30, 40, 50, 60, 70],
 };
 
 export default function Home() {
@@ -44,6 +45,7 @@ export default function Home() {
   const [filters, setFilters] = useState({
     role: "",
     experience: null,
+    salary: null,
   });
   const [searchQuery, setSearchQuery] = useState("");
 
@@ -138,6 +140,9 @@ export default function Home() {
       if (filters.experience !== null && job.minExp >= filters.experience) {
         return false;
       }
+      if (filters.salary !== null && job.minJdSalary <= filters.salary) {
+        return false;
+      }
       return true;
     });
 
@@ -190,6 +195,20 @@ export default function Home() {
               {filtersData?.experience.map((years) => (
                 <MenuItem key={years} value={years}>
                   {years}
+                </MenuItem>
+              ))}
+            </Select>
+          </FormControl>
+          <FormControl sx={{ width: "10vw" }}>
+            <InputLabel>Minimum Base Pay Salary</InputLabel>
+            <Select
+              value={filters.salary}
+              onChange={handleFilter}
+              name="salary"
+            >
+              {filtersData?.salary.map((band) => (
+                <MenuItem key={band} value={band}>
+                  {band} L
                 </MenuItem>
               ))}
             </Select>
