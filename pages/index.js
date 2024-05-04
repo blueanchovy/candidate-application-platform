@@ -33,6 +33,7 @@ const filtersData = {
   ],
   experience: [1, 2, 3, 4, 5, 6, 7, 8, 9, 10],
   salary: [0, 10, 20, 30, 40, 50, 60, 70],
+  location: ["Remote", "Hybrid"],
 };
 
 export default function Home() {
@@ -46,6 +47,7 @@ export default function Home() {
     role: "",
     experience: null,
     salary: null,
+    location: "",
   });
   const [searchQuery, setSearchQuery] = useState("");
 
@@ -130,29 +132,45 @@ export default function Home() {
   };
 
   useEffect(() => {
-    let filtered = jobData?.jdList?.filter((job) => {
-      if (
-        filters.role !== "" &&
-        !job.jobRole.toLowerCase().includes(filters.role.toLowerCase())
-      ) {
-        return false;
-      }
-      if (filters.experience !== null && job.minExp >= filters.experience) {
-        return false;
-      }
-      if (filters.salary !== null && job.minJdSalary <= filters.salary) {
-        return false;
-      }
-      return true;
-    });
+    let filteredJobs = jobData?.jdList;
 
-    if (searchQuery.trim() !== "") {
-      filtered = filtered.filter((job) =>
-        job.companyName.toLowerCase().includes(searchQuery.toLowerCase())
-      );
+    if (filteredJobs) {
+      filteredJobs = filteredJobs.filter((job) => {
+        if (
+          filters.role !== "" &&
+          !job.jobRole.toLowerCase().includes(filters.role.toLowerCase())
+        ) {
+          return false;
+        }
+        if (filters.experience !== null && job.minExp >= filters.experience) {
+          return false;
+        }
+        if (filters.salary !== null && job.minJdSalary <= filters.salary) {
+          return false;
+        }
+        if (filters.location !== "") {
+          if (filters.location === "In-Office") {
+            const isRemoteOrHybrid = filtersData.location.some((locationType) =>
+              job.location.toLowerCase().includes(locationType.toLowerCase())
+            );
+            return !isRemoteOrHybrid;
+          } else {
+            return job.location
+              .toLowerCase()
+              .includes(filters.location.toLowerCase());
+          }
+        }
+        return true;
+      });
+
+      if (searchQuery.trim() !== "") {
+        filteredJobs = filteredJobs.filter((job) =>
+          job.companyName.toLowerCase().includes(searchQuery.toLowerCase())
+        );
+      }
     }
 
-    setJobsToDisplay(filtered || []);
+    setJobsToDisplay(filteredJobs || []);
   }, [jobData, filters, searchQuery]);
 
   return (
@@ -166,8 +184,9 @@ export default function Home() {
       <main className={`${styles.main} ${inter.className}`}>
         <Box
           sx={{
+            width: "100%",
+            margin: "0 auto 1rem auto",
             flexWrap: "wrap",
-            marginBottom: "1rem",
             ">*": {
               marginRight: "0.5rem",
             },
@@ -211,6 +230,21 @@ export default function Home() {
                   {band} L
                 </MenuItem>
               ))}
+            </Select>
+          </FormControl>
+          <FormControl sx={{ width: "10vw" }}>
+            <InputLabel>Remote</InputLabel>
+            <Select
+              value={filters.location}
+              onChange={handleFilter}
+              name="location"
+            >
+              {filtersData?.location.map((type) => (
+                <MenuItem key={type} value={type}>
+                  {type}
+                </MenuItem>
+              ))}
+              <MenuItem value={"In-Office"}>In-Office</MenuItem>
             </Select>
           </FormControl>
           <TextField
