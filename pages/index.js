@@ -16,6 +16,22 @@ import {
 
 const inter = Inter({ subsets: ["latin"] });
 
+const filtersData = {
+  roles: [
+    "Backend",
+    "Frontend",
+    "FullStack",
+    "IOS",
+    "Flutter",
+    "React Native",
+    "Android",
+    "Tech Lead",
+    "Dev-Ops",
+    "Data Engineer",
+    "NLP",
+  ],
+};
+
 export default function Home() {
   const [jobData, setJobData] = useState();
   const [jobsToDisplay, setJobsToDisplay] = useState([]);
@@ -109,11 +125,13 @@ export default function Home() {
   };
 
   useEffect(() => {
-    let filtered = jobData?.jdList?.filter(
-      (job) =>
-        filters.role === "" ||
-        job.jobRole.toLowerCase().includes(filters.role.toLowerCase())
-    );
+    let filtered = jobData?.jdList?.filter((job) => {
+      if (filters.role === "") {
+        return true;
+      } else {
+        return job.jobRole.toLowerCase().includes(filters.role.toLowerCase());
+      }
+    });
 
     if (searchQuery.trim() !== "") {
       filtered = filtered.filter((job) =>
@@ -137,9 +155,11 @@ export default function Home() {
           <InputLabel>Roles</InputLabel>
           <Select value={filters.role} onChange={handleFilter} name="role">
             <MenuItem value="">All</MenuItem>
-            <MenuItem value="frontend">Frontend</MenuItem>
-            <MenuItem value="ios">iOS</MenuItem>
-            {/* Add more roles here */}
+            {filtersData?.roles.map((role) => (
+              <MenuItem key={role} value={role}>
+                {role}
+              </MenuItem>
+            ))}
           </Select>
         </FormControl>
         <TextField
