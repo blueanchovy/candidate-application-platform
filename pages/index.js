@@ -135,7 +135,7 @@ export default function Home() {
         ) {
           return false;
         }
-        if (filters.experience !== null && job.minExp < filters.experience) {
+        if (filters.experience !== null && job.minExp > filters.experience) {
           return false;
         }
         if (filters.salary !== null && job.minJdSalary <= filters.salary) {
@@ -246,14 +246,14 @@ export default function Home() {
           />
         </Box>
 
-        <Grid container spacing={4}>
+        <Grid container spacing={5}>
           {jobsToDisplay?.map((job, index) => (
             <Grid item key={index} xs={12} sm={6} md={4}>
               <Card
                 sx={{
                   boxShadow: "rgba(0, 0, 0, 0.25) 0px 1px 4px 0px !important",
                   borderRadius: "20px",
-                  padding: "1rem",
+                  padding: "1rem 0.4rem 0rem",
                   ":hover": {
                     transform: "scale(1.01)",
                     transition: "ease-in-out",
@@ -445,6 +445,26 @@ export default function Home() {
                   >
                     {job.minExp ? job.minExp + " Years" : "NA"}
                   </Typography>
+                  <Button
+                    variant="contained"
+                    sx={{
+                      width: "100%",
+                      backgroundColor: "rgb(85, 239, 196)",
+                      color: "rgb(0, 0, 0)",
+                      fontFamily: "Lexend",
+                      fontWeight: 500,
+                      padding: "8px 18px",
+                      textTransform: "none",
+                      borderRadius: "8px",
+                      marginTop: "1rem",
+                      marginBottom: "-0.5rem",
+                      ":hover": {
+                        backgroundColor: "rgb(85, 239, 196)",
+                      },
+                    }}
+                  >
+                    ⚡ Easy Apply
+                  </Button>
                 </CardContent>
               </Card>
             </Grid>
