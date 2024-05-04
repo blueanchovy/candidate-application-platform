@@ -3,6 +3,7 @@ import { Inter } from "next/font/google";
 import styles from "@/styles/Home.module.css";
 import { useEffect, useState } from "react";
 import {
+  Box,
   Card,
   CardContent,
   FormControl,
@@ -30,6 +31,7 @@ const filtersData = {
     "Data Engineer",
     "NLP",
   ],
+  experience: [1, 2, 3, 4, 5, 6, 7, 8, 9, 10],
 };
 
 export default function Home() {
@@ -41,6 +43,7 @@ export default function Home() {
   const [totalLoaded, setTotalLoaded] = useState(0);
   const [filters, setFilters] = useState({
     role: "",
+    experience: null,
   });
   const [searchQuery, setSearchQuery] = useState("");
 
@@ -126,11 +129,16 @@ export default function Home() {
 
   useEffect(() => {
     let filtered = jobData?.jdList?.filter((job) => {
-      if (filters.role === "") {
-        return true;
-      } else {
-        return job.jobRole.toLowerCase().includes(filters.role.toLowerCase());
+      if (
+        filters.role !== "" &&
+        !job.jobRole.toLowerCase().includes(filters.role.toLowerCase())
+      ) {
+        return false;
       }
+      if (filters.experience !== null && job.minExp >= filters.experience) {
+        return false;
+      }
+      return true;
     });
 
     if (searchQuery.trim() !== "") {
@@ -151,22 +159,48 @@ export default function Home() {
         <link rel="icon" href="/favicon.ico" />
       </Head>
       <main className={`${styles.main} ${inter.className}`}>
-        <FormControl>
-          <InputLabel>Roles</InputLabel>
-          <Select value={filters.role} onChange={handleFilter} name="role">
-            <MenuItem value="">All</MenuItem>
-            {filtersData?.roles.map((role) => (
-              <MenuItem key={role} value={role}>
-                {role}
-              </MenuItem>
-            ))}
-          </Select>
-        </FormControl>
-        <TextField
-          label="Search Jobs"
-          value={searchQuery}
-          onChange={handleSearch}
-        />
+        <Box
+          sx={{
+            flexWrap: "wrap",
+            marginBottom: "1rem",
+            ">*": {
+              marginRight: "0.5rem",
+            },
+          }}
+        >
+          <FormControl sx={{ width: "10vw" }}>
+            <InputLabel>Roles</InputLabel>
+            <Select value={filters.role} onChange={handleFilter} name="role">
+              <MenuItem value="">All</MenuItem>
+              {filtersData?.roles.map((role) => (
+                <MenuItem key={role} value={role}>
+                  {role}
+                </MenuItem>
+              ))}
+            </Select>
+          </FormControl>
+          <FormControl sx={{ width: "10vw" }}>
+            <InputLabel>Experience</InputLabel>
+            <Select
+              value={filters.experience}
+              onChange={handleFilter}
+              name="experience"
+            >
+              <MenuItem value={null}>All</MenuItem>
+              {filtersData?.experience.map((years) => (
+                <MenuItem key={years} value={years}>
+                  {years}
+                </MenuItem>
+              ))}
+            </Select>
+          </FormControl>
+          <TextField
+            label="Search Jobs"
+            value={searchQuery}
+            onChange={handleSearch}
+          />
+        </Box>
+
         <Grid container spacing={2}>
           {jobsToDisplay?.map((job, index) => (
             <Grid item key={index} xs={12} sm={6} md={4}>
@@ -175,6 +209,10 @@ export default function Home() {
                   {/* <Typography variant="subtitle1">{index + 1}</Typography> */}
                   <Typography variant="h8">{job.companyName}</Typography>
                   <Typography variant="subtitle1">{job.jobRole}</Typography>
+                  <Typography>
+                    {job.minExp && `${job.minExp}`} -{" "}
+                    {job.maxExp && `${job.maxExp}`} Years
+                  </Typography>
                   <Typography>{job.location}</Typography>
                   <Typography>{job.jobDetailsFromCompany}</Typography>
                   <Typography>
