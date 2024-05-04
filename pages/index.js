@@ -2,7 +2,17 @@ import Head from "next/head";
 import { Inter } from "next/font/google";
 import styles from "@/styles/Home.module.css";
 import { useEffect, useState } from "react";
-import { Card, CardContent, Grid, Typography } from "@mui/material";
+import {
+  Card,
+  CardContent,
+  FormControl,
+  Grid,
+  InputLabel,
+  MenuItem,
+  Select,
+  TextField,
+  Typography,
+} from "@mui/material";
 
 const inter = Inter({ subsets: ["latin"] });
 
@@ -13,7 +23,10 @@ export default function Home() {
   const [hasMore, setHasMore] = useState(true);
   const BASE_URL = "https://api.weekday.technology/adhoc/getSampleJdJSON";
   const [totalLoaded, setTotalLoaded] = useState(0);
-  // console.log("totalLoaded", totalLoaded);
+  const [filters, setFilters] = useState({
+    role: "",
+  });
+  const [searchQuery, setSearchQuery] = useState("");
 
   const debounce = (fn, delay) => {
     let timeoutId;
@@ -46,10 +59,11 @@ export default function Home() {
     try {
       const response = await fetch(BASE_URL, requestOptions);
       const result = await response.json();
-      setJobData(result);
-      // console.log("new fetched", result.jdList.length);
+      setJobData((prevJobData) => ({
+        ...prevJobData,
+        jdList: (prevJobData?.jdList || []).concat(result.jdList),
+      }));
       if (result?.jdList.length > 0) {
-        setJobsToDisplay((prevJobs) => prevJobs.concat(result.jdList));
         setTotalLoaded((prevTotal) => prevTotal + result.jdList.length);
       } else {
         setHasMore(false);
@@ -64,8 +78,9 @@ export default function Home() {
   const debouncedGetJobsData = debounce(getJobsData, 100);
 
   useEffect(() => {
-    if (jobData) return;
-    debouncedGetJobsData();
+    if (!jobData) {
+      debouncedGetJobsData();
+    }
   }, []);
 
   const handleScroll = () => {
@@ -84,6 +99,31 @@ export default function Home() {
     return () => window.removeEventListener("scroll", handleScroll);
   }, [loadingMoreData, hasMore]);
 
+  const handleFilter = (event) => {
+    const { name, value } = event.target;
+    setFilters({ ...filters, [name]: value });
+  };
+
+  const handleSearch = (event) => {
+    setSearchQuery(event.target.value);
+  };
+
+  useEffect(() => {
+    let filtered = jobData?.jdList?.filter(
+      (job) =>
+        filters.role === "" ||
+        job.jobRole.toLowerCase().includes(filters.role.toLowerCase())
+    );
+
+    if (searchQuery.trim() !== "") {
+      filtered = filtered.filter((job) =>
+        job.companyName.toLowerCase().includes(searchQuery.toLowerCase())
+      );
+    }
+
+    setJobsToDisplay(filtered || []);
+  }, [jobData, filters, searchQuery]);
+
   return (
     <>
       <Head>
@@ -93,6 +133,20 @@ export default function Home() {
         <link rel="icon" href="/favicon.ico" />
       </Head>
       <main className={`${styles.main} ${inter.className}`}>
+        <FormControl>
+          <InputLabel>Roles</InputLabel>
+          <Select value={filters.role} onChange={handleFilter} name="role">
+            <MenuItem value="">All</MenuItem>
+            <MenuItem value="frontend">Frontend</MenuItem>
+            <MenuItem value="ios">iOS</MenuItem>
+            {/* Add more roles here */}
+          </Select>
+        </FormControl>
+        <TextField
+          label="Search Jobs"
+          value={searchQuery}
+          onChange={handleSearch}
+        />
         <Grid container spacing={2}>
           {jobsToDisplay?.map((job, index) => (
             <Grid item key={index} xs={12} sm={6} md={4}>
