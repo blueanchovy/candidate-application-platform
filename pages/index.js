@@ -12,6 +12,7 @@ import {
   Button,
   styled,
   Autocomplete,
+  CircularProgress,
 } from "@mui/material";
 import Image from "next/image";
 import { capitalizeFirstLetterOfEachWord, debounce } from "@/utils/common";
@@ -640,7 +641,17 @@ export default function Home() {
             </Grid>
           ))}
         </Grid>
-        {loadingMoreData && <p>Loading...</p>}
+        {loadingMoreData && (
+          <Box
+            sx={{
+              display: "flex",
+              padding: "1rem",
+              color: "blue",
+            }}
+          >
+            <CircularProgress value={loadingMoreData} />
+          </Box>
+        )}
       </main>
     </>
   );
