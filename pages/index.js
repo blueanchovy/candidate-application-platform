@@ -74,7 +74,7 @@ const filtersData = {
   ],
   experience: [1, 2, 3, 4, 5, 6, 7, 8, 9, 10],
   salary: [0, 10, 20, 30, 40, 50, 60, 70],
-  location: ["Remote", "Hybrid"],
+  location: ["Remote", "Hybrid", "In-office"],
 };
 
 export default function Home() {
@@ -93,6 +93,8 @@ export default function Home() {
   const [searchQuery, setSearchQuery] = useState("");
   const [roleSearchQuery, setRoleSearchQuery] = useState("");
   const [experienceSearchQuery, setExperienceSearchQuery] = useState("");
+  const [salarySearchQuery, setSalarySearchQuery] = useState("");
+  const [locationSearchQuery, setLocationSearchQuery] = useState("");
 
   const getJobsData = async () => {
     if (!hasMore || loadingMoreData) return;
@@ -183,14 +185,11 @@ export default function Home() {
           return false;
         }
         if (filters?.location !== "") {
-          if (filters?.location === "In-Office") {
-            const isRemoteOrHybrid = filtersData?.location?.some(
-              (locationType) =>
-                job?.location
-                  ?.toLowerCase()
-                  ?.includes(locationType?.toLowerCase())
+          if (filters?.location === "In-office") {
+            const isInOffice = !["remote", "hybrid"].some((keyword) =>
+              job?.location?.toLowerCase()?.includes(keyword)
             );
-            return !isRemoteOrHybrid;
+            return isInOffice;
           } else {
             return job?.location
               ?.toLowerCase()
@@ -283,36 +282,58 @@ export default function Home() {
             )}
             sx={{ width: "178px" }}
           />
+          <Autocomplete
+            value={filters.salary}
+            onChange={(event, newValue, eventType) => {
+              if (eventType === "clear") {
+                handleFilter({
+                  target: { name: "salary", value: null },
+                });
+                return;
+              }
+              handleFilter({ target: { name: "salary", value: newValue } });
+            }}
+            inputValue={salarySearchQuery}
+            onInputChange={(event, newInputValue) => {
+              setSalarySearchQuery(newInputValue);
+            }}
+            options={filtersData.salary}
+            openOnFocus={true}
+            clearOnEscape={true}
+            renderInput={(params) => (
+              <TextField
+                {...params}
+                label="Minimum Base Pay Salary"
+                placeholder="Minimum Base Pay Salary"
+              />
+            )}
+            sx={{ width: "178px" }}
+          />
 
-          <FormControl sx={{ width: "200px", margin: "0 0.5rem 0.5rem 0" }}>
-            <InputLabel>Minimum Base Pay Salary</InputLabel>
-            <Select
-              value={filters.salary}
-              onChange={handleFilter}
-              name="salary"
-            >
-              {filtersData?.salary.map((band) => (
-                <MenuItem key={band} value={band}>
-                  {band} L
-                </MenuItem>
-              ))}
-            </Select>
-          </FormControl>
-          <FormControl sx={{ width: "200px", margin: "0 0.5rem 0.5rem 0" }}>
-            <InputLabel>Remote</InputLabel>
-            <Select
-              value={filters.location}
-              onChange={handleFilter}
-              name="location"
-            >
-              {filtersData?.location.map((type) => (
-                <MenuItem key={type} value={type}>
-                  {type}
-                </MenuItem>
-              ))}
-              <MenuItem value={"In-Office"}>In-Office</MenuItem>
-            </Select>
-          </FormControl>
+          <Autocomplete
+            value={filters.location}
+            onChange={(event, newValue, eventType) => {
+              if (eventType === "clear") {
+                handleFilter({
+                  target: { name: "location", value: "" },
+                });
+                return;
+              }
+              handleFilter({ target: { name: "location", value: newValue } });
+            }}
+            inputValue={locationSearchQuery}
+            onInputChange={(event, newInputValue) => {
+              setLocationSearchQuery(newInputValue);
+            }}
+            options={filtersData.location}
+            openOnFocus={true}
+            clearOnEscape={true}
+            renderInput={(params) => (
+              <TextField {...params} label="Remote" placeholder="Remote" />
+            )}
+            sx={{ width: "178px" }}
+          />
+
           <StyledTextField
             // label="Search Company Name"
             value={searchQuery}
