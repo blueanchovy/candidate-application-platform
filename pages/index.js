@@ -16,7 +16,6 @@ import {
   Button,
   styled,
   Autocomplete,
-  IconButton,
 } from "@mui/material";
 import Image from "next/image";
 import { capitalizeFirstLetterOfEachWord, debounce } from "@/utils/common";
@@ -93,6 +92,7 @@ export default function Home() {
   });
   const [searchQuery, setSearchQuery] = useState("");
   const [roleSearchQuery, setRoleSearchQuery] = useState("");
+  const [experienceSearchQuery, setExperienceSearchQuery] = useState("");
 
   const getJobsData = async () => {
     if (!hasMore || loadingMoreData) return;
@@ -159,17 +159,6 @@ export default function Home() {
     const { name, value } = event.target;
     setFilters({ ...filters, [name]: value });
   };
-  // const handleFilter = (event) => {
-  //   const { name, value } = event.target;
-  //   const updatedFilters = { ...filters, [name]: value };
-
-  //   if (value === "" || value === null) {
-  //     const { [name]: omit, ...rest } = updatedFilters;
-  //     setFilters(rest);
-  //   } else {
-  //     setFilters(updatedFilters);
-  //   }
-  // };
 
   const handleSearch = (event) => {
     setSearchQuery(event.target.value);
@@ -266,21 +255,35 @@ export default function Home() {
             )}
             sx={{ width: "178px" }}
           />
-          <FormControl sx={{ width: "200px", margin: "0 0.5rem 0.5rem 0" }}>
-            <InputLabel>Experience</InputLabel>
-            <Select
-              value={filters.experience}
-              onChange={handleFilter}
-              name="experience"
-            >
-              <MenuItem value={null}>All</MenuItem>
-              {filtersData?.experience.map((years) => (
-                <MenuItem key={years} value={years}>
-                  {years}
-                </MenuItem>
-              ))}
-            </Select>
-          </FormControl>
+
+          <Autocomplete
+            value={filters.experience}
+            onChange={(event, newValue, eventType) => {
+              if (eventType === "clear") {
+                handleFilter({
+                  target: { name: "experience", value: null },
+                });
+                return;
+              }
+              handleFilter({ target: { name: "experience", value: newValue } });
+            }}
+            inputValue={experienceSearchQuery}
+            onInputChange={(event, newInputValue) => {
+              setExperienceSearchQuery(newInputValue);
+            }}
+            options={filtersData.experience}
+            openOnFocus={true}
+            clearOnEscape={true}
+            renderInput={(params) => (
+              <TextField
+                {...params}
+                label="Experience"
+                placeholder="Experience"
+              />
+            )}
+            sx={{ width: "178px" }}
+          />
+
           <FormControl sx={{ width: "200px", margin: "0 0.5rem 0.5rem 0" }}>
             <InputLabel>Minimum Base Pay Salary</InputLabel>
             <Select
