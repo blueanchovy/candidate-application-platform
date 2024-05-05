@@ -14,11 +14,48 @@ import {
   TextField,
   Typography,
   Button,
+  styled,
 } from "@mui/material";
 import Image from "next/image";
 import { capitalizeFirstLetterOfEachWord, debounce } from "@/utils/common";
 
 const inter = Inter({ subsets: ["latin"] });
+
+const StyledTextField = styled(TextField)({
+  fontFamily: "Lexend",
+  width: "178px",
+  "& .MuiInputBase-root": {
+    height: "36px !important",
+    fontSize: "13px",
+    fontWeight: "500",
+  },
+  "& .MuiInputBase-input": {
+    fontFamily: "Lexend",
+    "& .MuiOutlinedInput-input": {
+      padding: "5px 8px",
+      fontFamily: "Lexend",
+      "&::placeholder": {
+        fontFamily: "Lexend", // Apply font family to placeholder
+      },
+    },
+  },
+  "& .MuiOutlinedInput-root": {
+    "& fieldset": {
+      borderColor: "#cccccc",
+      borderRadius: "4px",
+    },
+    "&:hover fieldset": {
+      borderColor: "#cccccc",
+    },
+    "&.Mui-focused fieldset": {
+      border: "1px solid #cccccc",
+      borderColor: "#cccccc",
+    },
+  },
+  "& .MuiInputLabel-root": {
+    display: "none", // Hide the label
+  },
+});
 
 const filtersData = {
   roles: [
@@ -185,7 +222,15 @@ export default function Home() {
           }}
         >
           <FormControl sx={{ width: "200px", margin: "0 0.5rem 0.5rem 0" }}>
-            <InputLabel>Roles</InputLabel>
+            <InputLabel
+              sx={{
+                ":focus": {
+                  marginTop: "-14px",
+                },
+              }}
+            >
+              Roles
+            </InputLabel>
             <Select value={filters.role} onChange={handleFilter} name="role">
               <MenuItem value="">All</MenuItem>
               {filtersData?.roles.map((role) => (
@@ -239,10 +284,11 @@ export default function Home() {
               <MenuItem value={"In-Office"}>In-Office</MenuItem>
             </Select>
           </FormControl>
-          <TextField
-            label="Search Jobs"
+          <StyledTextField
+            // label="Search Company Name"
             value={searchQuery}
             onChange={handleSearch}
+            placeholder="Search Company Name"
           />
         </Box>
 
