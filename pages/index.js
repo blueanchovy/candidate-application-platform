@@ -60,7 +60,6 @@ const StyledAutoComplete = styled(Autocomplete)({
   marginBottom: "1rem",
 
   "& .MuiInputBase-root": {
-    height: "36px !important",
     fontSize: "13px",
     fontWeight: "500",
   },
@@ -68,6 +67,7 @@ const StyledAutoComplete = styled(Autocomplete)({
     fontFamily: "Lexend",
     marginTop: "-8px",
     "& .MuiOutlinedInput-input": {
+      // marginTop: "-8px",
       padding: "0 8px",
       fontFamily: "Lexend",
       "&::placeholder": {
@@ -92,6 +92,17 @@ const StyledAutoComplete = styled(Autocomplete)({
     fontFamily: "Lexend",
     fontSize: "13px",
     marginTop: "-8px",
+  },
+  // "& .MuiButtonBase-root": {
+  "& .MuiChip-root": {
+    fontSize: "12px",
+    margin: "0 3px !important",
+    height: "16px !important",
+    fontFamily: "Lexend",
+    // },
+  },
+  "& .MuiChip-deleteIcon": {
+    fontSize: "14px !important",
   },
 });
 
@@ -122,7 +133,7 @@ export default function Home() {
   const BASE_URL = "https://api.weekday.technology/adhoc/getSampleJdJSON";
   const [totalLoaded, setTotalLoaded] = useState(0);
   const [filters, setFilters] = useState({
-    role: "",
+    role: [],
     experience: null,
     salary: null,
     location: "",
@@ -196,7 +207,11 @@ export default function Home() {
 
   const handleFilter = (event) => {
     const { name, value } = event.target;
-    setFilters({ ...filters, [name]: value });
+    if (name === "role") {
+      setFilters((prevFilters) => ({ ...prevFilters, [name]: value }));
+    } else {
+      setFilters({ ...filters, [name]: value });
+    }
   };
 
   const handleSearch = (event) => {
@@ -204,46 +219,47 @@ export default function Home() {
   };
 
   useEffect(() => {
-    let filteredJobs = jobData?.jdList;
+    if (!jobData) return;
 
-    if (filteredJobs) {
-      filteredJobs = filteredJobs.filter((job) => {
-        if (
-          filters.role !== "" &&
-          !job?.jobRole?.toLowerCase().includes(filters?.role?.toLowerCase())
-        ) {
-          console.log("hit", filters.role);
-          return false;
-        }
-        if (filters?.experience !== null && job?.minExp > filters?.experience) {
-          return false;
-        }
-        if (filters?.salary !== null && job?.minJdSalary <= filters?.salary) {
-          return false;
-        }
-        if (filters?.location !== "") {
-          if (filters?.location === "In-office") {
-            const isInOffice = !["remote", "hybrid"].some((keyword) =>
-              job?.location?.toLowerCase()?.includes(keyword)
-            );
-            return isInOffice;
-          } else {
-            return job?.location
-              ?.toLowerCase()
-              ?.includes(filters?.location?.toLowerCase());
-          }
-        }
-        return true;
-      });
+    let filteredJobs = [...jobData.jdList];
 
-      if (searchQuery.trim() !== "") {
-        filteredJobs = filteredJobs.filter((job) =>
-          job.companyName.toLowerCase().includes(searchQuery.toLowerCase())
+    filteredJobs = filteredJobs.filter((job) => {
+      const { role, experience, salary, location } = filters;
+      if (role.length > 0) {
+        const match = role.some(
+          (selectedRole) =>
+            selectedRole.toLowerCase() === job.jobRole.toLowerCase()
         );
+        if (!match) {
+          return false;
+        }
       }
+      if (experience !== null && job.minExp > experience) {
+        return false;
+      }
+      if (salary !== null && job.minJdSalary <= salary) {
+        return false;
+      }
+      if (location !== "") {
+        if (location === "In-office") {
+          const isInOffice = !["remote", "hybrid"].some((keyword) =>
+            job.location.toLowerCase().includes(keyword)
+          );
+          return isInOffice;
+        } else {
+          return job.location.toLowerCase().includes(location.toLowerCase());
+        }
+      }
+      return true;
+    });
+
+    if (searchQuery.trim() !== "") {
+      filteredJobs = filteredJobs.filter((job) =>
+        job.companyName.toLowerCase().includes(searchQuery.toLowerCase())
+      );
     }
 
-    setJobsToDisplay(filteredJobs || []);
+    setJobsToDisplay(filteredJobs);
   }, [jobData, filters, searchQuery]);
 
   return (
@@ -266,30 +282,36 @@ export default function Home() {
         >
           <StyledAutoComplete
             value={filters.role}
+            multiple
             onChange={(event, newValue, eventType) => {
-              console.log("newValue", newValue);
               if (eventType === "clear") {
-                handleFilter({
-                  target: { name: "role", value: "" },
-                });
-                return;
+                handleFilter({ target: { name: "role", value: [] } });
+              } else {
+                handleFilter({ target: { name: "role", value: newValue } });
               }
-              handleFilter({ target: { name: "role", value: newValue } });
             }}
             inputValue={roleSearchQuery}
             onInputChange={(event, newInputValue) => {
               setRoleSearchQuery(newInputValue);
             }}
-            options={filtersData.roles}
+            options={filtersData.roles.filter(
+              (roleType) => !filters.role.includes(roleType)
+            )}
             openOnFocus={true}
             clearOnEscape={true}
-            // isOptionEqualToValue={(option, value) =>
-            //   option === value || value === ""
-            // }
             renderInput={(params) => (
               <TextField {...params} label="Roles" placeholder="Search Roles" />
             )}
-            sx={{ width: "178px" }}
+            sx={{
+              minWidth: "178px",
+              width: "auto",
+              "& .MuiInputBase-root": {
+                height:
+                  filters.role.length > 0
+                    ? "auto !important"
+                    : "36px !important",
+              },
+            }}
           />
 
           <StyledAutoComplete
@@ -317,7 +339,12 @@ export default function Home() {
                 placeholder="Experience"
               />
             )}
-            sx={{ width: "178px" }}
+            sx={{
+              width: "178px",
+              "& .MuiInputBase-root": {
+                height: "36px !important",
+              },
+            }}
           />
           <StyledAutoComplete
             value={filters.salary}
@@ -344,7 +371,12 @@ export default function Home() {
                 placeholder="Minimum Base Pay Salary"
               />
             )}
-            sx={{ width: "216px" }}
+            sx={{
+              width: "216px",
+              "& .MuiInputBase-root": {
+                height: "36px !important",
+              },
+            }}
           />
 
           <StyledAutoComplete
@@ -368,7 +400,12 @@ export default function Home() {
             renderInput={(params) => (
               <TextField {...params} label="Remote" placeholder="Remote" />
             )}
-            sx={{ width: "178px" }}
+            sx={{
+              width: "178px",
+              "& .MuiInputBase-root": {
+                height: "36px !important",
+              },
+            }}
           />
 
           <StyledTextField
