@@ -6,11 +6,7 @@ import {
   Box,
   Card,
   CardContent,
-  FormControl,
   Grid,
-  InputLabel,
-  MenuItem,
-  Select,
   TextField,
   Typography,
   Button,
@@ -25,6 +21,7 @@ const inter = Inter({ subsets: ["latin"] });
 const StyledTextField = styled(TextField)({
   fontFamily: "Lexend",
   width: "178px",
+  marginBottom: "1rem",
   "& .MuiInputBase-root": {
     height: "36px !important",
     fontSize: "13px",
@@ -36,7 +33,7 @@ const StyledTextField = styled(TextField)({
       padding: "5px 8px",
       fontFamily: "Lexend",
       "&::placeholder": {
-        fontFamily: "Lexend", // Apply font family to placeholder
+        fontFamily: "Lexend",
       },
     },
   },
@@ -54,7 +51,47 @@ const StyledTextField = styled(TextField)({
     },
   },
   "& .MuiInputLabel-root": {
-    display: "none", // Hide the label
+    display: "none",
+  },
+});
+const StyledAutoComplete = styled(Autocomplete)({
+  fontFamily: "Lexend",
+  width: "178px",
+  marginBottom: "1rem",
+
+  "& .MuiInputBase-root": {
+    height: "36px !important",
+    fontSize: "13px",
+    fontWeight: "500",
+  },
+  "& .MuiInputBase-input": {
+    fontFamily: "Lexend",
+    marginTop: "-8px",
+    "& .MuiOutlinedInput-input": {
+      padding: "0 8px",
+      fontFamily: "Lexend",
+      "&::placeholder": {
+        fontFamily: "Lexend",
+      },
+    },
+  },
+  "& .MuiOutlinedInput-root": {
+    "& fieldset": {
+      borderColor: "#cccccc",
+      borderRadius: "4px",
+    },
+    "&:hover fieldset": {
+      borderColor: "#cccccc",
+    },
+    "&.Mui-focused fieldset": {
+      border: "1px solid #cccccc",
+      borderColor: "#cccccc",
+    },
+  },
+  "& .MuiInputLabel-root": {
+    fontFamily: "Lexend",
+    fontSize: "13px",
+    marginTop: "-8px",
   },
 });
 
@@ -227,7 +264,7 @@ export default function Home() {
             justifyContent: "space-around",
           }}
         >
-          <Autocomplete
+          <StyledAutoComplete
             value={filters.role}
             onChange={(event, newValue, eventType) => {
               console.log("newValue", newValue);
@@ -255,7 +292,7 @@ export default function Home() {
             sx={{ width: "178px" }}
           />
 
-          <Autocomplete
+          <StyledAutoComplete
             value={filters.experience}
             onChange={(event, newValue, eventType) => {
               if (eventType === "clear") {
@@ -282,7 +319,7 @@ export default function Home() {
             )}
             sx={{ width: "178px" }}
           />
-          <Autocomplete
+          <StyledAutoComplete
             value={filters.salary}
             onChange={(event, newValue, eventType) => {
               if (eventType === "clear") {
@@ -307,10 +344,10 @@ export default function Home() {
                 placeholder="Minimum Base Pay Salary"
               />
             )}
-            sx={{ width: "178px" }}
+            sx={{ width: "216px" }}
           />
 
-          <Autocomplete
+          <StyledAutoComplete
             value={filters.location}
             onChange={(event, newValue, eventType) => {
               if (eventType === "clear") {
