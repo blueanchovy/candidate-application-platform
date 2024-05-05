@@ -124,7 +124,7 @@ const filtersData = {
   // ],
   experience: [1, 2, 3, 4, 5, 6, 7, 8, 9, 10],
   salary: [0, 10, 20, 30, 40, 50, 60, 70],
-  location: ["Remote", "Hybrid", "In-office"],
+  // location: ["Remote", "Hybrid", "In-office"],
 };
 
 export default function Home() {
@@ -138,9 +138,10 @@ export default function Home() {
     role: [],
     experience: null,
     salary: null,
-    location: "",
+    location: [],
   });
   const [rolesToDisplay, setRolesToDisplay] = useState([]);
+  const [locationsToDisplay, setLocationsToDisplay] = useState([]);
   const [searchQuery, setSearchQuery] = useState("");
   const [roleSearchQuery, setRoleSearchQuery] = useState("");
   const [experienceSearchQuery, setExperienceSearchQuery] = useState("");
@@ -151,11 +152,18 @@ export default function Home() {
     if (jobData && jobData.jdList) {
       const uniqueRoles = new Set(
         jobData.jdList.map((job) =>
-          capitalizeFirstLetterOfEachWord(job.jobRole)
+          capitalizeFirstLetterOfEachWord(job?.jobRole)
         )
       );
       const rolesArray = [...uniqueRoles];
       setRolesToDisplay(rolesArray);
+      const uniqueLocations = new Set(
+        jobData.jdList.map((job) =>
+          capitalizeFirstLetterOfEachWord(job?.location)
+        )
+      );
+      const locationsArray = [...uniqueLocations];
+      setLocationsToDisplay(locationsArray);
     }
   }, [jobData]);
 
@@ -222,11 +230,7 @@ export default function Home() {
 
   const handleFilter = (event) => {
     const { name, value } = event.target;
-    if (name === "role") {
-      setFilters((prevFilters) => ({ ...prevFilters, [name]: value }));
-    } else {
-      setFilters({ ...filters, [name]: value });
-    }
+    setFilters((prevFilters) => ({ ...prevFilters, [name]: value }));
   };
 
   const handleSearch = (event) => {
@@ -255,14 +259,13 @@ export default function Home() {
       if (salary !== null && job.minJdSalary <= salary) {
         return false;
       }
-      if (location !== "") {
-        if (location === "In-office") {
-          const isInOffice = !["remote", "hybrid"].some((keyword) =>
-            job.location.toLowerCase().includes(keyword)
-          );
-          return isInOffice;
-        } else {
-          return job.location.toLowerCase().includes(location.toLowerCase());
+      if (location.length > 0) {
+        const match = location.some(
+          (selectedLocation) =>
+            selectedLocation.toLowerCase() === job.location.toLowerCase()
+        );
+        if (!match) {
+          return false;
         }
       }
       return true;
@@ -396,29 +399,34 @@ export default function Home() {
 
           <StyledAutoComplete
             value={filters.location}
+            multiple
             onChange={(event, newValue, eventType) => {
               if (eventType === "clear") {
-                handleFilter({
-                  target: { name: "location", value: "" },
-                });
-                return;
+                handleFilter({ target: { name: "location", value: [] } });
+              } else {
+                handleFilter({ target: { name: "location", value: newValue } });
               }
-              handleFilter({ target: { name: "location", value: newValue } });
             }}
             inputValue={locationSearchQuery}
             onInputChange={(event, newInputValue) => {
               setLocationSearchQuery(newInputValue);
             }}
-            options={filtersData.location}
+            options={locationsToDisplay?.filter(
+              (locationName) => !filters.location.includes(locationName)
+            )}
             openOnFocus={true}
             clearOnEscape={true}
             renderInput={(params) => (
-              <TextField {...params} label="Remote" placeholder="Remote" />
+              <TextField {...params} label="Location" placeholder="Location" />
             )}
             sx={{
-              width: "178px",
+              minWidth: "178px",
+              width: "auto",
               "& .MuiInputBase-root": {
-                height: "36px !important",
+                height:
+                  filters.role.length > 0
+                    ? "auto !important"
+                    : "36px !important",
               },
             }}
           />

@@ -1,6 +1,6 @@
 export function capitalizeFirstLetterOfEachWord(sentence) {
   const regex = /\b\w/g;
-  return sentence.replace(regex, (match) => match.toUpperCase());
+  return sentence?.replace(regex, (match) => match.toUpperCase());
 }
 
 export const debounce = (fn, delay) => {
