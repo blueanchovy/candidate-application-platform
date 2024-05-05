@@ -148,6 +148,7 @@ export default function Home() {
   const [salarySearchQuery, setSalarySearchQuery] = useState("");
   const [locationSearchQuery, setLocationSearchQuery] = useState("");
 
+  //set dynamic filter options based on api response
   useEffect(() => {
     if (jobData && jobData.jdList) {
       const uniqueRoles = new Set(
@@ -167,6 +168,7 @@ export default function Home() {
     }
   }, [jobData]);
 
+  //fetch and set jobs data from api in a state
   const getJobsData = async () => {
     if (!hasMore || loadingMoreData) return;
     setLoadingMoreData(true);
@@ -204,14 +206,17 @@ export default function Home() {
     }
   };
 
+  //debounce to prevent multiple fetch calls in a given period
   const debouncedGetJobsData = debounce(getJobsData, 100);
 
+  //fetch jons data on initial page load
   useEffect(() => {
     if (!jobData) {
       debouncedGetJobsData();
     }
   }, []);
 
+  //determine if the user has reached end of the page, if so fetch more data(Infinite Scroll)
   const handleScroll = () => {
     if (
       window.innerHeight + document.documentElement.scrollTop >=
@@ -223,20 +228,24 @@ export default function Home() {
     }
   };
 
+  //invoke handleScroll when user scrolls
   useEffect(() => {
     window.addEventListener("scroll", handleScroll);
     return () => window.removeEventListener("scroll", handleScroll);
   }, [loadingMoreData, hasMore]);
 
+  //handle whenever user applies a filter
   const handleFilter = (event) => {
     const { name, value } = event.target;
     setFilters((prevFilters) => ({ ...prevFilters, [name]: value }));
   };
 
+  //handle search by user
   const handleSearch = (event) => {
     setSearchQuery(event.target.value);
   };
 
+  //update jobs to be displayed based on user search and filters
   useEffect(() => {
     if (!jobData) return;
 
