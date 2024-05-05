@@ -15,6 +15,8 @@ import {
   Typography,
   Button,
   styled,
+  Autocomplete,
+  IconButton,
 } from "@mui/material";
 import Image from "next/image";
 import { capitalizeFirstLetterOfEachWord, debounce } from "@/utils/common";
@@ -90,6 +92,7 @@ export default function Home() {
     location: "",
   });
   const [searchQuery, setSearchQuery] = useState("");
+  const [roleSearchQuery, setRoleSearchQuery] = useState("");
 
   const getJobsData = async () => {
     if (!hasMore || loadingMoreData) return;
@@ -156,6 +159,17 @@ export default function Home() {
     const { name, value } = event.target;
     setFilters({ ...filters, [name]: value });
   };
+  // const handleFilter = (event) => {
+  //   const { name, value } = event.target;
+  //   const updatedFilters = { ...filters, [name]: value };
+
+  //   if (value === "" || value === null) {
+  //     const { [name]: omit, ...rest } = updatedFilters;
+  //     setFilters(rest);
+  //   } else {
+  //     setFilters(updatedFilters);
+  //   }
+  // };
 
   const handleSearch = (event) => {
     setSearchQuery(event.target.value);
@@ -168,26 +182,30 @@ export default function Home() {
       filteredJobs = filteredJobs.filter((job) => {
         if (
           filters.role !== "" &&
-          !job.jobRole.toLowerCase().includes(filters.role.toLowerCase())
+          !job?.jobRole?.toLowerCase().includes(filters?.role?.toLowerCase())
         ) {
+          console.log("hit", filters.role);
           return false;
         }
-        if (filters.experience !== null && job.minExp > filters.experience) {
+        if (filters?.experience !== null && job?.minExp > filters?.experience) {
           return false;
         }
-        if (filters.salary !== null && job.minJdSalary <= filters.salary) {
+        if (filters?.salary !== null && job?.minJdSalary <= filters?.salary) {
           return false;
         }
-        if (filters.location !== "") {
-          if (filters.location === "In-Office") {
-            const isRemoteOrHybrid = filtersData.location.some((locationType) =>
-              job.location.toLowerCase().includes(locationType.toLowerCase())
+        if (filters?.location !== "") {
+          if (filters?.location === "In-Office") {
+            const isRemoteOrHybrid = filtersData?.location?.some(
+              (locationType) =>
+                job?.location
+                  ?.toLowerCase()
+                  ?.includes(locationType?.toLowerCase())
             );
             return !isRemoteOrHybrid;
           } else {
-            return job.location
-              .toLowerCase()
-              .includes(filters.location.toLowerCase());
+            return job?.location
+              ?.toLowerCase()
+              ?.includes(filters?.location?.toLowerCase());
           }
         }
         return true;
@@ -221,25 +239,33 @@ export default function Home() {
             justifyContent: "space-around",
           }}
         >
-          <FormControl sx={{ width: "200px", margin: "0 0.5rem 0.5rem 0" }}>
-            <InputLabel
-              sx={{
-                ":focus": {
-                  marginTop: "-14px",
-                },
-              }}
-            >
-              Roles
-            </InputLabel>
-            <Select value={filters.role} onChange={handleFilter} name="role">
-              <MenuItem value="">All</MenuItem>
-              {filtersData?.roles.map((role) => (
-                <MenuItem key={role} value={role}>
-                  {role}
-                </MenuItem>
-              ))}
-            </Select>
-          </FormControl>
+          <Autocomplete
+            value={filters.role}
+            onChange={(event, newValue, eventType) => {
+              console.log("newValue", newValue);
+              if (eventType === "clear") {
+                handleFilter({
+                  target: { name: "role", value: "" },
+                });
+                return;
+              }
+              handleFilter({ target: { name: "role", value: newValue } });
+            }}
+            inputValue={roleSearchQuery}
+            onInputChange={(event, newInputValue) => {
+              setRoleSearchQuery(newInputValue);
+            }}
+            options={filtersData.roles}
+            openOnFocus={true}
+            clearOnEscape={true}
+            // isOptionEqualToValue={(option, value) =>
+            //   option === value || value === ""
+            // }
+            renderInput={(params) => (
+              <TextField {...params} label="Roles" placeholder="Search Roles" />
+            )}
+            sx={{ width: "178px" }}
+          />
           <FormControl sx={{ width: "200px", margin: "0 0.5rem 0.5rem 0" }}>
             <InputLabel>Experience</InputLabel>
             <Select
@@ -452,7 +478,7 @@ export default function Home() {
                         color: "rgb(73, 67, 218)",
                         textDecoration: "none",
                         fontSize: "14px !important",
-                        fontWeight: "400 !important",
+                        fontWeight: "300 !important",
                         color: "#4943da",
                         ":hover": {
                           border: "none",
