@@ -59,6 +59,7 @@ const StyledAutoComplete = styled(Autocomplete)({
   fontFamily: "Lexend",
   width: "178px",
   marginBottom: "1rem",
+  marginRight: "16px",
 
   "& .MuiInputBase-root": {
     fontSize: "13px",
@@ -108,19 +109,19 @@ const StyledAutoComplete = styled(Autocomplete)({
 });
 
 const filtersData = {
-  roles: [
-    "Backend",
-    "Frontend",
-    "FullStack",
-    "IOS",
-    "Flutter",
-    "React Native",
-    "Android",
-    "Tech Lead",
-    "Dev-Ops",
-    "Data Engineer",
-    "NLP",
-  ],
+  // roles: [
+  //   "Backend",
+  //   "Frontend",
+  //   "FullStack",
+  //   "IOS",
+  //   "Flutter",
+  //   "React Native",
+  //   "Android",
+  //   "Tech Lead",
+  //   "Dev-Ops",
+  //   "Data Engineer",
+  //   "NLP",
+  // ],
   experience: [1, 2, 3, 4, 5, 6, 7, 8, 9, 10],
   salary: [0, 10, 20, 30, 40, 50, 60, 70],
   location: ["Remote", "Hybrid", "In-office"],
@@ -139,11 +140,24 @@ export default function Home() {
     salary: null,
     location: "",
   });
+  const [rolesToDisplay, setRolesToDisplay] = useState([]);
   const [searchQuery, setSearchQuery] = useState("");
   const [roleSearchQuery, setRoleSearchQuery] = useState("");
   const [experienceSearchQuery, setExperienceSearchQuery] = useState("");
   const [salarySearchQuery, setSalarySearchQuery] = useState("");
   const [locationSearchQuery, setLocationSearchQuery] = useState("");
+
+  useEffect(() => {
+    if (jobData && jobData.jdList) {
+      const uniqueRoles = new Set(
+        jobData.jdList.map((job) =>
+          capitalizeFirstLetterOfEachWord(job.jobRole)
+        )
+      );
+      const rolesArray = [...uniqueRoles];
+      setRolesToDisplay(rolesArray);
+    }
+  }, [jobData]);
 
   const getJobsData = async () => {
     if (!hasMore || loadingMoreData) return;
@@ -295,7 +309,7 @@ export default function Home() {
             onInputChange={(event, newInputValue) => {
               setRoleSearchQuery(newInputValue);
             }}
-            options={filtersData.roles.filter(
+            options={rolesToDisplay?.filter(
               (roleType) => !filters.role.includes(roleType)
             )}
             openOnFocus={true}
