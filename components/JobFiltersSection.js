@@ -1,6 +1,6 @@
 import styled from "@emotion/styled";
 import { Autocomplete, Box, TextField } from "@mui/material";
-import React from "react";
+import React, { useState } from "react";
 
 const StyledTextField = styled(TextField)({
   fontFamily: "Lexend",
@@ -100,18 +100,14 @@ function JobFiltersSection({
   handleSearch = () => null,
   handleFilter = () => null,
   searchQuery = "",
-  roleSearchQuery = "",
-  setRoleSearchQuery = () => null,
-  experienceSearchQuery = "",
-  setExperienceSearchQuery = () => null,
-  salarySearchQuery = "",
-  setSalarySearchQuery = () => null,
-  locationSearchQuery = "",
-  setLocationSearchQuery = () => null,
   rolesToDisplay = [],
   locationsToDisplay = [],
   filters = [],
 }) {
+  const [roleSearchQuery, setRoleSearchQuery] = useState("");
+  const [experienceSearchQuery, setExperienceSearchQuery] = useState("");
+  const [salarySearchQuery, setSalarySearchQuery] = useState("");
+  const [locationSearchQuery, setLocationSearchQuery] = useState("");
   return (
     <>
       <Box

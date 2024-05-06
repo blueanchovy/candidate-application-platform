@@ -4,7 +4,6 @@ import styles from "@/styles/Home.module.css";
 import { useEffect, useState } from "react";
 import { capitalizeFirstLetterOfEachWord, debounce } from "@/utils/common";
 import JobFiltersSection from "@/components/JobFiltersSection";
-import CircularLoader from "@/components/CircularLoader";
 import JobDetailsSection from "@/components/JobDetailsSection";
 
 const inter = Inter({ subsets: ["latin"] });
@@ -25,32 +24,8 @@ export default function Home() {
   const [rolesToDisplay, setRolesToDisplay] = useState([]);
   const [locationsToDisplay, setLocationsToDisplay] = useState([]);
   const [searchQuery, setSearchQuery] = useState("");
-  const [roleSearchQuery, setRoleSearchQuery] = useState("");
-  const [experienceSearchQuery, setExperienceSearchQuery] = useState("");
-  const [salarySearchQuery, setSalarySearchQuery] = useState("");
-  const [locationSearchQuery, setLocationSearchQuery] = useState("");
 
-  //set dynamic filter options based on api response
-  useEffect(() => {
-    if (jobData && jobData.jdList) {
-      const uniqueRoles = new Set(
-        jobData.jdList.map((job) =>
-          capitalizeFirstLetterOfEachWord(job?.jobRole)
-        )
-      );
-      const rolesArray = [...uniqueRoles];
-      setRolesToDisplay(rolesArray);
-      const uniqueLocations = new Set(
-        jobData.jdList.map((job) =>
-          capitalizeFirstLetterOfEachWord(job?.location)
-        )
-      );
-      const locationsArray = [...uniqueLocations];
-      setLocationsToDisplay(locationsArray);
-    }
-  }, [jobData]);
-
-  //fetch and set jobs data from api in a state
+  //function to fetch and set jobs data from api in a state
   const getJobsData = async () => {
     if (!hasMore || loadingMoreData) return;
     setLoadingMoreData(true);
@@ -97,6 +72,26 @@ export default function Home() {
       debouncedGetJobsData();
     }
   }, []);
+
+  //set dynamic filter options based on api response
+  useEffect(() => {
+    if (jobData && jobData.jdList) {
+      const uniqueRoles = new Set(
+        jobData.jdList.map((job) =>
+          capitalizeFirstLetterOfEachWord(job?.jobRole)
+        )
+      );
+      const rolesArray = [...uniqueRoles];
+      setRolesToDisplay(rolesArray);
+      const uniqueLocations = new Set(
+        jobData.jdList.map((job) =>
+          capitalizeFirstLetterOfEachWord(job?.location)
+        )
+      );
+      const locationsArray = [...uniqueLocations];
+      setLocationsToDisplay(locationsArray);
+    }
+  }, [jobData]);
 
   //determine if the user has reached end of the page, if so fetch more data(Infinite Scroll)
   const handleScroll = () => {
@@ -184,20 +179,14 @@ export default function Home() {
           handleSearch={handleSearch}
           handleFilter={handleFilter}
           setSearchQuery={setSearchQuery}
-          roleSearchQuery={roleSearchQuery}
-          setRoleSearchQuery={setRoleSearchQuery}
-          experienceSearchQuery={experienceSearchQuery}
-          setExperienceSearchQuery={setExperienceSearchQuery}
-          salarySearchQuery={salarySearchQuery}
-          setSalarySearchQuery={setSalarySearchQuery}
-          locationSearchQuery={locationSearchQuery}
-          setLocationSearchQuery={setLocationSearchQuery}
           rolesToDisplay={rolesToDisplay}
           locationsToDisplay={locationsToDisplay}
           filters={filters}
         />
-        <JobDetailsSection jobsToDisplay={jobsToDisplay} />
-        <CircularLoader loading={loadingMoreData} />
+        <JobDetailsSection
+          jobsToDisplay={jobsToDisplay}
+          loading={loadingMoreData}
+        />
       </main>
     </>
   );
