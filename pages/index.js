@@ -4,9 +4,9 @@ import styles from "@/styles/Home.module.css";
 import { useEffect, useState } from "react";
 import { Box, Grid, CircularProgress } from "@mui/material";
 import { capitalizeFirstLetterOfEachWord, debounce } from "@/utils/common";
-import JobDetailsCard from "@/components/JobDetailsCard";
 import JobFiltersSection from "@/components/JobFiltersSection";
 import CircularLoader from "@/components/CircularLoader";
+import JobDetailsSection from "@/components/JobDetailsSection";
 
 const inter = Inter({ subsets: ["latin"] });
 
@@ -197,11 +197,7 @@ export default function Home() {
           locationsToDisplay={locationsToDisplay}
           filters={filters}
         />
-        <Grid container spacing={5}>
-          {jobsToDisplay?.map((job, index) => (
-            <JobDetailsCard key={index} job={job} />
-          ))}
-        </Grid>
+        <JobDetailsSection jobsToDisplay={jobsToDisplay} />
         <CircularLoader loading={loadingMoreData} />
       </main>
     </>
