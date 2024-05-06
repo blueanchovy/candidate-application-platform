@@ -1,5 +1,5 @@
 import styled from "@emotion/styled";
-import { Autocomplete, Box, TextField } from "@mui/material";
+import { Autocomplete, Box, TextField, Typography } from "@mui/material";
 import React, { useState } from "react";
 
 const StyledTextField = styled(TextField)({
@@ -108,6 +108,7 @@ function JobFiltersSection({
   const [experienceSearchQuery, setExperienceSearchQuery] = useState("");
   const [salarySearchQuery, setSalarySearchQuery] = useState("");
   const [locationSearchQuery, setLocationSearchQuery] = useState("");
+
   return (
     <>
       <Box
@@ -141,6 +142,13 @@ function JobFiltersSection({
           renderInput={(params) => (
             <TextField {...params} label="Roles" placeholder="Search Roles" />
           )}
+          renderOption={(params) => {
+            return (
+              <Typography style={{ fontFamily: "Lexend" }} {...params}>
+                {params.key}
+              </Typography>
+            );
+          }}
           sx={{
             minWidth: "178px",
             width: "auto !important",
@@ -176,6 +184,13 @@ function JobFiltersSection({
               placeholder="Experience"
             />
           )}
+          renderOption={(params) => {
+            return (
+              <Typography style={{ fontFamily: "Lexend" }} {...params}>
+                {params.key + " Years"}
+              </Typography>
+            );
+          }}
           sx={{
             width: "178px",
             "& .MuiInputBase-root": {
@@ -192,12 +207,15 @@ function JobFiltersSection({
               });
               return;
             }
+            // const selectedValue = newValue.replace(" L", "");
+            // handleFilter({ target: { name: "salary", value: selectedValue } });
             handleFilter({ target: { name: "salary", value: newValue } });
           }}
           inputValue={salarySearchQuery}
           onInputChange={(event, newInputValue) => {
             setSalarySearchQuery(newInputValue);
           }}
+          //   options={filtersData.salary.map((option) => `${option} L`)}
           options={filtersData.salary}
           openOnFocus={true}
           clearOnEscape={true}
@@ -206,8 +224,24 @@ function JobFiltersSection({
               {...params}
               label="Minimum Base Pay Salary"
               placeholder="Minimum Base Pay Salary"
-            />
+              //   value={
+              //     salarySearchQuery.endsWith(" L")
+              //       ? salarySearchQuery
+              //       : salarySearchQuery + " L"
+              //   }
+              value={salarySearchQuery}
+              onChange={(event) => setSalarySearchQuery(event.target.value)}
+            >
+              {salarySearchQuery + " L"}
+            </TextField>
           )}
+          renderOption={(params) => {
+            return (
+              <Typography style={{ fontFamily: "Lexend" }} {...params}>
+                {params.key + " L"}
+              </Typography>
+            );
+          }}
           sx={{
             width: "216px !important",
             "& .MuiInputBase-root": {
@@ -238,6 +272,13 @@ function JobFiltersSection({
           renderInput={(params) => (
             <TextField {...params} label="Location" placeholder="Location" />
           )}
+          renderOption={(params) => {
+            return (
+              <Typography style={{ fontFamily: "Lexend" }} {...params}>
+                {params.key}
+              </Typography>
+            );
+          }}
           sx={{
             minWidth: "178px",
             width: "auto !important",

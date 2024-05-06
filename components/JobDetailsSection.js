@@ -1,14 +1,18 @@
 import { Grid } from "@mui/material";
 import React from "react";
-import JobDetailsCard from "./JobDetailsCard";
 import CircularLoader from "./CircularLoader";
+import dynamic from "next/dynamic";
+
+const DynamicJobDetailsCard = dynamic(() => import("./JobDetailsCard"), {
+  loading: () => <></>,
+});
 
 function JobDetailsSection({ jobsToDisplay = [], loading = false }) {
   return (
     <>
       <Grid container spacing={5}>
         {jobsToDisplay?.map((job, index) => (
-          <JobDetailsCard key={index} job={job} />
+          <DynamicJobDetailsCard key={index} job={job} />
         ))}
       </Grid>
       <CircularLoader loading={loading} />

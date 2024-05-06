@@ -3,10 +3,23 @@ import { Inter } from "next/font/google";
 import styles from "@/styles/Home.module.css";
 import { useEffect, useState } from "react";
 import { capitalizeFirstLetterOfEachWord, debounce } from "@/utils/common";
-import JobFiltersSection from "@/components/JobFiltersSection";
-import JobDetailsSection from "@/components/JobDetailsSection";
+import dynamic from "next/dynamic";
+import CircularLoader from "@/components/CircularLoader";
 
 const inter = Inter({ subsets: ["latin"] });
+
+const DynamicJobFiltersSection = dynamic(
+  () => import("@/components/JobFiltersSection"),
+  {
+    loading: () => <CircularLoader loading={true} />,
+  }
+);
+const DynamicJobDetailsSection = dynamic(
+  () => import("@/components/JobDetailsSection"),
+  {
+    loading: () => <CircularLoader loading={true} />,
+  }
+);
 
 export default function Home() {
   const [jobData, setJobData] = useState();
@@ -175,15 +188,15 @@ export default function Home() {
         <link rel="icon" href="/favicon.ico" />
       </Head>
       <main className={`${styles.main} ${inter.className}`}>
-        <JobFiltersSection
+        <DynamicJobFiltersSection
           handleSearch={handleSearch}
           handleFilter={handleFilter}
-          setSearchQuery={setSearchQuery}
+          searchQuery={searchQuery}
           rolesToDisplay={rolesToDisplay}
           locationsToDisplay={locationsToDisplay}
           filters={filters}
         />
-        <JobDetailsSection
+        <DynamicJobDetailsSection
           jobsToDisplay={jobsToDisplay}
           loading={loadingMoreData}
         />
