@@ -6,6 +6,7 @@ import { Box, Grid, CircularProgress } from "@mui/material";
 import { capitalizeFirstLetterOfEachWord, debounce } from "@/utils/common";
 import JobDetailsCard from "@/components/JobDetailsCard";
 import JobFiltersSection from "@/components/JobFiltersSection";
+import CircularLoader from "@/components/CircularLoader";
 
 const inter = Inter({ subsets: ["latin"] });
 
@@ -201,17 +202,7 @@ export default function Home() {
             <JobDetailsCard key={index} job={job} />
           ))}
         </Grid>
-        {loadingMoreData && (
-          <Box
-            sx={{
-              display: "flex",
-              padding: "1rem",
-              color: "blue",
-            }}
-          >
-            <CircularProgress value={loadingMoreData} />
-          </Box>
-        )}
+        <CircularLoader loading={loadingMoreData} />
       </main>
     </>
   );
