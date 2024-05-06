@@ -2,7 +2,7 @@ import { Grid } from "@mui/material";
 import React from "react";
 import JobDetailsCard from "./JobDetailsCard";
 
-function JobDetailsSection({ jobsToDisplay }) {
+function JobDetailsSection({ jobsToDisplay = [] }) {
   return (
     <>
       <Grid container spacing={5}>
@@ -14,4 +14,4 @@ function JobDetailsSection({ jobsToDisplay }) {
   );
 }
 
-export default JobDetailsSection;
+export default React.memo(JobDetailsSection);

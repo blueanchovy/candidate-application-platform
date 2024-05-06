@@ -2,7 +2,6 @@ import Head from "next/head";
 import { Inter } from "next/font/google";
 import styles from "@/styles/Home.module.css";
 import { useEffect, useState } from "react";
-import { Box, Grid, CircularProgress } from "@mui/material";
 import { capitalizeFirstLetterOfEachWord, debounce } from "@/utils/common";
 import JobFiltersSection from "@/components/JobFiltersSection";
 import CircularLoader from "@/components/CircularLoader";

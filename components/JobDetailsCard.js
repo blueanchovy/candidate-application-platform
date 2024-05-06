@@ -10,7 +10,7 @@ import {
 import Image from "next/image";
 import React from "react";
 
-function JobDetailsCard({ job }) {
+function JobDetailsCard({ job = {} }) {
   return (
     <>
       <Grid item xs={12} sm={6} md={4}>
@@ -237,4 +237,4 @@ function JobDetailsCard({ job }) {
   );
 }
 
-export default JobDetailsCard;
+export default React.memo(JobDetailsCard);

@@ -92,39 +92,25 @@ const StyledAutoComplete = styled(Autocomplete)({
 });
 
 const filtersData = {
-  // roles: [
-  //   "Backend",
-  //   "Frontend",
-  //   "FullStack",
-  //   "IOS",
-  //   "Flutter",
-  //   "React Native",
-  //   "Android",
-  //   "Tech Lead",
-  //   "Dev-Ops",
-  //   "Data Engineer",
-  //   "NLP",
-  // ],
   experience: [1, 2, 3, 4, 5, 6, 7, 8, 9, 10],
   salary: [0, 10, 20, 30, 40, 50, 60, 70],
-  // location: ["Remote", "Hybrid", "In-office"],
 };
 
 function JobFiltersSection({
-  handleSearch,
-  handleFilter,
-  searchQuery,
-  roleSearchQuery,
-  setRoleSearchQuery,
-  experienceSearchQuery,
-  setExperienceSearchQuery,
-  salarySearchQuery,
-  setSalarySearchQuery,
-  locationSearchQuery,
-  setLocationSearchQuery,
-  rolesToDisplay,
-  locationsToDisplay,
-  filters,
+  handleSearch = () => null,
+  handleFilter = () => null,
+  searchQuery = "",
+  roleSearchQuery = "",
+  setRoleSearchQuery = () => null,
+  experienceSearchQuery = "",
+  setExperienceSearchQuery = () => null,
+  salarySearchQuery = "",
+  setSalarySearchQuery = () => null,
+  locationSearchQuery = "",
+  setLocationSearchQuery = () => null,
+  rolesToDisplay = [],
+  locationsToDisplay = [],
+  filters = [],
 }) {
   return (
     <>
@@ -279,4 +265,4 @@ function JobFiltersSection({
   );
 }
 
-export default JobFiltersSection;
+export default React.memo(JobFiltersSection);
